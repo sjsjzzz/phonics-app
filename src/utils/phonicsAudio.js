@@ -36,6 +36,24 @@ const LETTER_PHONEMES = {
   Z: '[[z]]',       // /z/ as in "zebra"
 };
 
+function doLoadVoice(ms, resolve) {
+  const voiceUrl = window.location.origin + '/mespeak/voices/en.json';
+  try {
+    ms.loadVoice(voiceUrl, function (success) {
+      if (success) {
+        initialized = true;
+        console.log('meSpeak voice loaded successfully');
+      } else {
+        console.warn('meSpeak voice load failed');
+      }
+      resolve(success);
+    });
+  } catch (e) {
+    console.error('meSpeak loadVoice error:', e);
+    resolve(false);
+  }
+}
+
 function initMeSpeak() {
   if (initPromise) return initPromise;
 
@@ -48,17 +66,7 @@ function initMeSpeak() {
     }
 
     try {
-      // 절대 경로로 음성 파일 로드 (상대경로는 스크립트 위치 기준이라 오류 발생)
-      const voiceUrl = window.location.origin + '/mespeak/voices/en.json';
-      ms.loadVoice(voiceUrl, function (success) {
-        if (success) {
-          initialized = true;
-          console.log('meSpeak voice loaded successfully');
-        } else {
-          console.warn('meSpeak voice load failed');
-        }
-        resolve(success);
-      });
+      doLoadVoice(ms, resolve);
     } catch (e) {
       console.error('meSpeak init error:', e);
       resolve(false);
