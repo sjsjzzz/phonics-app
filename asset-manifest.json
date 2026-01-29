@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/phonics-app/static/css/main.c21a6a43.css",
+    "main.js": "/phonics-app/static/js/main.35cf6925.js",
+    "index.html": "/phonics-app/index.html",
+    "main.c21a6a43.css.map": "/phonics-app/static/css/main.c21a6a43.css.map",
+    "main.35cf6925.js.map": "/phonics-app/static/js/main.35cf6925.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.c21a6a43.css",
+    "static/js/main.35cf6925.js"
+  ]
+}
