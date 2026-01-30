@@ -118,13 +118,13 @@ export default function LearningScreen({
 
   const renderLesson = () => {
     switch (stage) {
-      case 1: return <AlphabetLesson lesson={lesson} speakPhonics={speech.speakPhonics} speakWord={speech.speakWord} onCorrect={onCorrect} />;
-      case 2: return <CVCLesson lesson={lesson} speakPhonics={speech.speakPhonics} speakWord={speech.speakWord} addStars={addStars} onCorrect={onCorrect} />;
-      case 3: return <BlendLesson lesson={lesson} speakWord={speech.speakWord} onCorrect={onCorrect} />;
-      case 4: return <LongVowelLesson lesson={lesson} speakWord={speech.speakWord} onCorrect={onCorrect} />;
-      case 5: return <SpecialRuleLesson lesson={lesson} speakWord={speech.speakWord} onCorrect={onCorrect} />;
-      case 6: return <SightWordsLesson lesson={lesson} speakWord={speech.speakWord} speakSentence={speech.speakSentence} onCorrect={onCorrect} />;
-      case 7: return <SentenceLesson lesson={lesson} speak={speech.speak} speakSentence={speech.speakSentence} speechRate={speech.rate} onCorrect={onCorrect} />;
+      case 1: return <AlphabetLesson key={lessonIndex} lesson={lesson} speakPhonics={speech.speakPhonics} speakWord={speech.speakWord} onCorrect={onCorrect} />;
+      case 2: return <CVCLesson key={lessonIndex} lesson={lesson} speakPhonics={speech.speakPhonics} speakWord={speech.speakWord} addStars={addStars} onCorrect={onCorrect} />;
+      case 3: return <BlendLesson key={lessonIndex} lesson={lesson} speakWord={speech.speakWord} onCorrect={onCorrect} />;
+      case 4: return <LongVowelLesson key={lessonIndex} lesson={lesson} speakWord={speech.speakWord} onCorrect={onCorrect} />;
+      case 5: return <SpecialRuleLesson key={lessonIndex} lesson={lesson} speakWord={speech.speakWord} onCorrect={onCorrect} />;
+      case 6: return <SightWordsLesson key={lessonIndex} lesson={lesson} speakWord={speech.speakWord} speakSentence={speech.speakSentence} onCorrect={onCorrect} />;
+      case 7: return <SentenceLesson key={lessonIndex} lesson={lesson} speak={speech.speak} speakSentence={speech.speakSentence} speechRate={speech.rate} onCorrect={onCorrect} />;
       default: return null;
     }
   };

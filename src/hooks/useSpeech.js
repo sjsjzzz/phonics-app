@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { playPhonicsSound, preloadMeSpeak } from '../utils/phonicsAudio';
+import { preloadMeSpeak } from '../utils/phonicsAudio';
 
 let cachedVoice = null;
 let voicesInitialized = false;
@@ -114,8 +114,8 @@ export function useSpeech() {
     A: 'ah', B: 'buh', C: 'kuh', D: 'duh', E: 'eh',
     F: 'fuh', G: 'guh', H: 'huh', I: 'ih', J: 'juh',
     K: 'kuh', L: 'luh', M: 'muh', N: 'nuh', O: 'oh',
-    P: 'puh', Q: 'kwuh', R: 'ruh', S: 'suh', T: 'tuh',
-    U: 'uh', V: 'vuh', W: 'wuh', X: 'ks', Y: 'yuh', Z: 'zuh',
+    P: 'puh', Q: 'kw', R: 'ruh', S: 'suh', T: 'tuh',
+    U: 'uh', V: 'vuh', W: 'wuh', X: 'eks', Y: 'yuh', Z: 'zz',
   };
 
   const speakPhonics = useCallback((letter, onEnd) => {
