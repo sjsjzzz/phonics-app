@@ -7,7 +7,8 @@ const STAGES = [
   { num: 3, title: '자음 블렌드', icon: '🔀', color: 'from-yellow-400 to-yellow-500' },
   { num: 4, title: '장모음 & Magic E', icon: '✨', color: 'from-green-400 to-green-500' },
   { num: 5, title: '특수 규칙', icon: '📚', color: 'from-blue-400 to-blue-500' },
-  { num: 6, title: '문장 읽기', icon: '📝', color: 'from-purple-400 to-purple-500' },
+  { num: 6, title: '필수 단어', icon: '👁️', color: 'from-indigo-400 to-indigo-500' },
+  { num: 7, title: '문장 읽기', icon: '📝', color: 'from-purple-400 to-purple-500' },
 ];
 
 export default function StagesScreen({ stars, getStageProgress, stageData, onSelectStage, onBack }) {
