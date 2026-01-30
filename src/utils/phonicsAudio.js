@@ -4,13 +4,34 @@
 let initPromise = null;
 let meSpeakReady = false;
 
+// meSpeak IPA phonemes - 자음은 schwa(@)를 붙여야 발음됨
 const LETTER_PHONEMES = {
-  A: '[[a]]', B: '[[b]]', C: '[[k]]', D: '[[d]]', E: '[[E]]',
-  F: '[[f]]', G: '[[g]]', H: '[[h]]', I: '[[I]]', J: '[[dZ]]',
-  K: '[[k]]', L: '[[l]]', M: '[[m]]', N: '[[n]]', O: '[[0]]',
-  P: '[[p]]', Q: '[[kw]]', R: '[[r]]', S: '[[s]]', T: '[[t]]',
-  U: '[[V]]', V: '[[v]]', W: '[[w]]', X: '[[ks]]', Y: '[[j]]',
-  Z: '[[z]]',
+  A: '[[a]]',      // "æ" as in "cat"
+  B: '[[b@]]',     // "buh"
+  C: '[[k@]]',     // "kuh" (hard c)
+  D: '[[d@]]',     // "duh"
+  E: '[[E]]',      // "e" as in "bed"
+  F: '[[f@]]',     // "fuh"
+  G: '[[g@]]',     // "guh"
+  H: '[[h@]]',     // "huh"
+  I: '[[I]]',      // "i" as in "sit"
+  J: '[[dZ@]]',    // "juh"
+  K: '[[k@]]',     // "kuh"
+  L: '[[l@]]',     // "luh"
+  M: '[[m@]]',     // "muh"
+  N: '[[n@]]',     // "nuh"
+  O: '[[0]]',      // "o" as in "hot"
+  P: '[[p@]]',     // "puh"
+  Q: '[[kw@]]',    // "kwuh"
+  R: '[[r@]]',     // "ruh"
+  S: '[[s@]]',     // "suh"
+  T: '[[t@]]',     // "tuh"
+  U: '[[V]]',      // "u" as in "cup"
+  V: '[[v@]]',     // "vuh"
+  W: '[[w@]]',     // "wuh"
+  X: '[[ks@]]',    // "ks"
+  Y: '[[j@]]',     // "yuh"
+  Z: '[[z@]]',     // "zuh"
 };
 
 function loadScript(src) {

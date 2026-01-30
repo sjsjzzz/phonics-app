@@ -18,6 +18,7 @@ import cvcData from './data/cvcData';
 import blendData from './data/blendData';
 import longVowelData from './data/longVowelData';
 import specialRuleData from './data/specialRuleData';
+import sightWordsData from './data/sightWordsData';
 import sentenceData from './data/sentenceData';
 
 const stageData = {
@@ -26,7 +27,8 @@ const stageData = {
   3: blendData,
   4: longVowelData,
   5: specialRuleData,
-  6: sentenceData,
+  6: sightWordsData,
+  7: sentenceData,
 };
 
 export default function App() {
