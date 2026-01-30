@@ -4,34 +4,34 @@
 let initPromise = null;
 let meSpeakReady = false;
 
-// meSpeak IPA phonemes - 자음은 schwa(@)를 붙여야 발음됨
+// meSpeak phonemes - 단어 형태로 발음 (더 확실함)
 const LETTER_PHONEMES = {
-  A: '[[a]]',      // "æ" as in "cat"
-  B: '[[b@]]',     // "buh"
-  C: '[[k@]]',     // "kuh" (hard c)
-  D: '[[d@]]',     // "duh"
-  E: '[[E]]',      // "e" as in "bed"
-  F: '[[f@]]',     // "fuh"
-  G: '[[g@]]',     // "guh"
-  H: '[[h@]]',     // "huh"
-  I: '[[I]]',      // "i" as in "sit"
-  J: '[[dZ@]]',    // "juh"
-  K: '[[k@]]',     // "kuh"
-  L: '[[l@]]',     // "luh"
-  M: '[[m@]]',     // "muh"
-  N: '[[n@]]',     // "nuh"
-  O: '[[0]]',      // "o" as in "hot"
-  P: '[[p@]]',     // "puh"
-  Q: '[[kw@]]',    // "kwuh"
-  R: '[[r@]]',     // "ruh"
-  S: '[[s@]]',     // "suh"
-  T: '[[t@]]',     // "tuh"
-  U: '[[V]]',      // "u" as in "cup"
-  V: '[[v@]]',     // "vuh"
-  W: '[[w@]]',     // "wuh"
-  X: '[[ks@]]',    // "ks"
-  Y: '[[j@]]',     // "yuh"
-  Z: '[[z@]]',     // "zuh"
+  A: 'ah',         // short a sound
+  B: 'buh',        // b sound
+  C: 'kuh',        // hard c sound
+  D: 'duh',        // d sound
+  E: 'eh',         // short e sound
+  F: 'fuh',        // f sound
+  G: 'guh',        // hard g sound
+  H: 'huh',        // h sound
+  I: 'ih',         // short i sound
+  J: 'juh',        // j sound
+  K: 'kuh',        // k sound
+  L: 'luh',        // l sound
+  M: 'muh',        // m sound
+  N: 'nuh',        // n sound
+  O: 'ah',         // short o sound
+  P: 'puh',        // p sound
+  Q: 'kwuh',       // qu sound
+  R: 'ruh',        // r sound
+  S: 'suh',        // s sound
+  T: 'tuh',        // t sound
+  U: 'uh',         // short u sound
+  V: 'vuh',        // v sound
+  W: 'wuh',        // w sound
+  X: 'ks',         // x sound
+  Y: 'yuh',        // y sound
+  Z: 'zuh',        // z sound
 };
 
 function loadScript(src) {
@@ -142,8 +142,12 @@ export async function playPhonicsSound(letter, options = {}) {
   }
 
   try {
+    // 일반 텍스트로 발음 (더 자연스러움)
     window.meSpeak.speak(phoneme, {
-      speed, pitch: 55, wordgap: 0, volume: 1.0,
+      speed: 130,      // 약간 느리게
+      pitch: 50,       // 중간 톤
+      wordgap: 0,
+      volume: 1.0,
     }, () => onEnd?.());
   } catch (e) {
     console.error('meSpeak speak error:', e);
