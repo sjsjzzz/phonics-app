@@ -109,10 +109,20 @@ export function useSpeech() {
     setTimeout(() => window.speechSynthesis.speak(utterance), 50);
   }, []);
 
-  // meSpeak으로 순수 발음기호 음가 재생 (알파벳 카드, CVC 개별 글자, 게임)
+  // 알파벳 음가 발음 (Web Speech API 사용 - 더 안정적)
+  const PHONICS_SOUNDS = {
+    A: 'ah', B: 'buh', C: 'kuh', D: 'duh', E: 'eh',
+    F: 'fuh', G: 'guh', H: 'huh', I: 'ih', J: 'juh',
+    K: 'kuh', L: 'luh', M: 'muh', N: 'nuh', O: 'oh',
+    P: 'puh', Q: 'kwuh', R: 'ruh', S: 'suh', T: 'tuh',
+    U: 'uh', V: 'vuh', W: 'wuh', X: 'ks', Y: 'yuh', Z: 'zuh',
+  };
+
   const speakPhonics = useCallback((letter, onEnd) => {
-    playPhonicsSound(letter, { speed: 100, onEnd });
-  }, []);
+    const upper = (letter || '').toUpperCase();
+    const sound = PHONICS_SOUNDS[upper] || letter;
+    speak(sound, { rate: 0.7, pitch: 1.0, onEnd });
+  }, [speak]);
 
   // 단어 발음 (Web Speech API)
   const speakWord = useCallback((word, onEnd) => {
