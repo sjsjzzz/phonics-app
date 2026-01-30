@@ -74,6 +74,11 @@ export function useSpeech() {
       return;
     }
 
+    // Ensure speechSynthesis is active (mobile fix)
+    if (window.speechSynthesis.paused) {
+      window.speechSynthesis.resume();
+    }
+
     window.speechSynthesis.cancel();
     if (resumeRef.current) clearInterval(resumeRef.current);
 

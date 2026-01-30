@@ -1,13 +1,20 @@
 import React, { useState } from 'react';
+import { unlockAudio } from '../../utils/sound';
 
 export default function LoginScreen({ users, onLogin, onAddUser, onDeleteUser }) {
   const [inputName, setInputName] = useState('');
   const [showNewUser, setShowNewUser] = useState(users.length === 0);
 
-  const handleAdd = () => {
+  const handleLogin = async (name) => {
+    await unlockAudio(); // Unlock audio on mobile
+    onLogin(name);
+  };
+
+  const handleAdd = async () => {
     const name = inputName.trim();
     if (!name) return;
     if (users.some((u) => u.name === name)) return;
+    await unlockAudio(); // Unlock audio on mobile
     onAddUser(name);
     setInputName('');
   };
@@ -30,7 +37,7 @@ export default function LoginScreen({ users, onLogin, onAddUser, onDeleteUser })
             {users.map((user) => (
               <div key={user.name} className="flex items-center gap-2">
                 <button
-                  onClick={() => onLogin(user.name)}
+                  onClick={() => handleLogin(user.name)}
                   className="flex-1 bg-gradient-to-r from-blue-100 to-purple-100 p-4 rounded-xl text-left active:scale-95 transition-transform min-h-[44px]"
                 >
                   <div className="font-bold text-gray-800">{user.name}</div>
