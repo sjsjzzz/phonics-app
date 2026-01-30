@@ -5,16 +5,16 @@ export default function LoginScreen({ users, onLogin, onAddUser, onDeleteUser })
   const [inputName, setInputName] = useState('');
   const [showNewUser, setShowNewUser] = useState(users.length === 0);
 
-  const handleLogin = async (name) => {
-    await unlockAudio(); // Unlock audio on mobile
+  const handleLogin = (name) => {
+    unlockAudio(); // Unlock audio on mobile - must be sync!
     onLogin(name);
   };
 
-  const handleAdd = async () => {
+  const handleAdd = () => {
     const name = inputName.trim();
     if (!name) return;
     if (users.some((u) => u.name === name)) return;
-    await unlockAudio(); // Unlock audio on mobile
+    unlockAudio(); // Unlock audio on mobile - must be sync!
     onAddUser(name);
     setInputName('');
   };

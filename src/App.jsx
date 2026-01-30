@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useSpeech } from './hooks/useSpeech';
 import { useUser } from './hooks/useUser';
+import { unlockAudio } from './utils/sound';
 import LoginScreen from './components/screens/LoginScreen';
 import HomeScreen from './components/screens/HomeScreen';
 import StagesScreen from './components/screens/StagesScreen';
@@ -40,15 +41,23 @@ export default function App() {
   const [currentGame, setCurrentGame] = useState(null);
 
   const handleLogin = (name) => {
+    unlockAudio(); // Unlock audio on mobile
     user.selectUser(name);
     setScreen('home');
-    speech.speakWord(`Hello ${name}! Let's learn phonics!`);
+    // Delay speech slightly to ensure audio is ready
+    setTimeout(() => {
+      speech.speakWord(`Hello ${name}! Let's learn phonics!`);
+    }, 300);
   };
 
   const handleAddUser = (name) => {
+    unlockAudio(); // Unlock audio on mobile
     user.addUser(name);
     setScreen('home');
-    speech.speakWord(`Hello ${name}! Let's learn phonics!`);
+    // Delay speech slightly to ensure audio is ready
+    setTimeout(() => {
+      speech.speakWord(`Hello ${name}! Let's learn phonics!`);
+    }, 300);
   };
 
   const handleLogout = () => {
@@ -158,7 +167,12 @@ export default function App() {
   };
 
   return (
-    <div className="font-sans select-none" style={{ touchAction: 'manipulation' }}>
+    <div
+      className="font-sans select-none"
+      style={{ touchAction: 'manipulation' }}
+      onClick={unlockAudio}
+      onTouchStart={unlockAudio}
+    >
       {renderScreen()}
     </div>
   );

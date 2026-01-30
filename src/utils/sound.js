@@ -6,45 +6,44 @@ function getCtx() {
   if (!audioCtx) {
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   }
+  // Always try to resume on mobile
+  if (audioCtx.state === 'suspended') {
+    audioCtx.resume();
+  }
   return audioCtx;
 }
 
-// Unlock audio on mobile - must be called from user interaction (click/tap)
+// Unlock audio on mobile - MUST be called synchronously from user tap
 export function unlockAudio() {
-  if (audioUnlocked) return Promise.resolve();
+  if (audioUnlocked) return;
 
-  return new Promise((resolve) => {
-    try {
-      const ctx = getCtx();
+  try {
+    // Create and resume AudioContext
+    const ctx = getCtx();
 
-      // Resume AudioContext if suspended
-      if (ctx.state === 'suspended') {
-        ctx.resume().then(() => {
-          audioUnlocked = true;
-          resolve();
-        }).catch(() => resolve());
-      } else {
-        audioUnlocked = true;
-        resolve();
-      }
+    // Play a short beep to force unlock (iOS requires actual sound)
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    gain.gain.value = 0.001; // Nearly silent
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.001);
 
-      // Play silent sound to fully unlock on iOS
-      const buffer = ctx.createBuffer(1, 1, 22050);
-      const source = ctx.createBufferSource();
-      source.buffer = buffer;
-      source.connect(ctx.destination);
-      source.start(0);
-
-      // Also unlock speechSynthesis on iOS
-      if (window.speechSynthesis) {
-        const utterance = new SpeechSynthesisUtterance('');
-        utterance.volume = 0;
-        window.speechSynthesis.speak(utterance);
-      }
-    } catch (e) {
-      resolve();
+    // Unlock speechSynthesis - speak actual word (empty string doesn't work on iOS)
+    if (window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance('.');
+      utterance.volume = 0.01;
+      utterance.rate = 10; // Fast
+      window.speechSynthesis.speak(utterance);
     }
-  });
+
+    audioUnlocked = true;
+    console.log('Audio unlocked!');
+  } catch (e) {
+    console.log('Audio unlock failed:', e);
+  }
 }
 
 // Happy "ding!" chime for correct answers
