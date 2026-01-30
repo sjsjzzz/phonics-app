@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { loadUsers, saveUsers } from '../utils/storage';
-import { LEVELS, STAR_REWARDS } from '../utils/constants';
+import { LEVELS } from '../utils/constants';
 
 const createUser = (name) => ({
   name,

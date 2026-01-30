@@ -1,90 +1,114 @@
 // meSpeak.js wrapper for IPA phonics sounds
-// Uses eSpeak engine to accurately pronounce individual phoneme sounds
+// Loads meSpeak lazily to avoid blocking page load or navigation
 
-let initialized = false;
 let initPromise = null;
+let meSpeakReady = false;
 
-// Each letter's primary phonics sound in eSpeak phoneme notation
-// Wrapped in [[...]] so eSpeak treats them as raw phonemes, not text
-// Reference: http://espeak.sourceforge.net/phonemes.html
 const LETTER_PHONEMES = {
-  A: '[[a]]',       // /æ/ - short a as in "cat"
-  B: '[[b]]',       // /b/ as in "ball"
-  C: '[[k]]',       // /k/ as in "cat"
-  D: '[[d]]',       // /d/ as in "dog"
-  E: '[[E]]',       // /ɛ/ - short e as in "bed"
-  F: '[[f]]',       // /f/ as in "fish"
-  G: '[[g]]',       // /g/ as in "goat"
-  H: '[[h]]',       // /h/ as in "hat"
-  I: '[[I]]',       // /ɪ/ - short i as in "sit"
-  J: '[[dZ]]',      // /dʒ/ as in "jam"
-  K: '[[k]]',       // /k/ as in "kite"
-  L: '[[l]]',       // /l/ as in "lion"
-  M: '[[m]]',       // /m/ as in "moon"
-  N: '[[n]]',       // /n/ as in "nose"
-  O: '[[0]]',       // /ɒ/ - short o as in "hot"
-  P: '[[p]]',       // /p/ as in "pig"
-  Q: '[[kw]]',      // /kw/ as in "queen"
-  R: '[[r]]',       // /r/ as in "rabbit"
-  S: '[[s]]',       // /s/ as in "sun"
-  T: '[[t]]',       // /t/ as in "tree"
-  U: '[[V]]',       // /ʌ/ - short u as in "cup"
-  V: '[[v]]',       // /v/ as in "van"
-  W: '[[w]]',       // /w/ as in "water"
-  X: '[[ks]]',      // /ks/ as in "box"
-  Y: '[[j]]',       // /j/ as in "yes"
-  Z: '[[z]]',       // /z/ as in "zebra"
+  A: '[[a]]', B: '[[b]]', C: '[[k]]', D: '[[d]]', E: '[[E]]',
+  F: '[[f]]', G: '[[g]]', H: '[[h]]', I: '[[I]]', J: '[[dZ]]',
+  K: '[[k]]', L: '[[l]]', M: '[[m]]', N: '[[n]]', O: '[[0]]',
+  P: '[[p]]', Q: '[[kw]]', R: '[[r]]', S: '[[s]]', T: '[[t]]',
+  U: '[[V]]', V: '[[v]]', W: '[[w]]', X: '[[ks]]', Y: '[[j]]',
+  Z: '[[z]]',
 };
 
-function doLoadVoice(ms, resolve) {
-  const voiceUrl = window.location.origin + '/mespeak/voices/en.json';
-  try {
-    ms.loadVoice(voiceUrl, function (success) {
-      if (success) {
-        initialized = true;
-        console.log('meSpeak voice loaded successfully');
+function loadScript(src) {
+  return new Promise((resolve, reject) => {
+    // Don't load twice
+    const existing = document.querySelector(`script[src="${src}"]`);
+    if (existing) {
+      if (existing.dataset.loaded === 'true') {
+        resolve();
       } else {
-        console.warn('meSpeak voice load failed');
+        existing.addEventListener('load', () => resolve());
+        existing.addEventListener('error', () => reject(new Error('Script load failed: ' + src)));
       }
-      resolve(success);
-    });
-  } catch (e) {
-    console.error('meSpeak loadVoice error:', e);
-    resolve(false);
-  }
+      return;
+    }
+    const script = document.createElement('script');
+    script.src = src;
+    script.async = true;
+    script.onload = () => { script.dataset.loaded = 'true'; resolve(); };
+    script.onerror = () => reject(new Error('Script load failed: ' + src));
+    document.head.appendChild(script);
+  });
 }
 
 function initMeSpeak() {
   if (initPromise) return initPromise;
 
-  initPromise = new Promise((resolve) => {
-    const ms = window.meSpeak;
-    if (!ms) {
-      console.warn('meSpeak not loaded');
-      resolve(false);
-      return;
-    }
-
+  initPromise = (async () => {
     try {
-      doLoadVoice(ms, resolve);
+      // 1) Load meSpeak front-end
+      await loadScript('/mespeak/mespeak.js');
+      const ms = window.meSpeak;
+      if (!ms) {
+        console.warn('meSpeak: window.meSpeak not available after script load');
+        return false;
+      }
+
+      // 2) Wait for meSpeak core to be ready
+      //    mespeak.js auto-loads mespeak-core.js via dynamic <script>
+      const coreReady = await new Promise((resolve) => {
+        let attempts = 0;
+        const check = () => {
+          attempts++;
+          if (ms.isConfigLoaded()) {
+            resolve(true);
+          } else if (attempts > 50) { // 5 seconds max
+            resolve(false);
+          } else {
+            setTimeout(check, 100);
+          }
+        };
+        check();
+      });
+
+      if (!coreReady) {
+        console.warn('meSpeak: core did not initialize');
+        return false;
+      }
+
+      // 3) Verify voice file is valid JSON before passing to meSpeak
+      const voiceUrl = window.location.origin + '/mespeak/en-us.json';
+      const resp = await fetch(voiceUrl);
+      if (!resp.ok) {
+        console.warn('meSpeak: voice fetch failed', resp.status);
+        return false;
+      }
+      const text = await resp.text();
+      if (!text.startsWith('{')) {
+        console.warn('meSpeak: voice file is not JSON');
+        return false;
+      }
+
+      // 4) Load voice
+      const voiceOk = await new Promise((resolve) => {
+        ms.loadVoice(voiceUrl, (success) => resolve(success));
+      });
+
+      if (voiceOk) {
+        meSpeakReady = true;
+        console.log('meSpeak: ready');
+      } else {
+        console.warn('meSpeak: voice load returned false');
+      }
+      return voiceOk;
     } catch (e) {
       console.error('meSpeak init error:', e);
-      resolve(false);
+      return false;
     }
-  });
+  })();
 
   return initPromise;
 }
 
-/**
- * Play the phonics sound for a given letter using meSpeak (eSpeak engine)
- * This produces the actual phoneme sound, not the letter name.
- */
 export async function playPhonicsSound(letter, options = {}) {
   const { speed = 100, onEnd = null } = options;
 
   const ok = await initMeSpeak();
-  if (!ok || !window.meSpeak) {
+  if (!ok || !meSpeakReady) {
     onEnd?.();
     return;
   }
@@ -98,24 +122,17 @@ export async function playPhonicsSound(letter, options = {}) {
 
   try {
     window.meSpeak.speak(phoneme, {
-      speed: speed,       // words per minute (lower = slower, clearer)
-      pitch: 55,          // 0-99
-      wordgap: 0,
-      volume: 1.0,
-    }, function () {
-      onEnd?.();
-    });
+      speed, pitch: 55, wordgap: 0, volume: 1.0,
+    }, () => onEnd?.());
   } catch (e) {
     console.error('meSpeak speak error:', e);
     onEnd?.();
   }
 }
 
-/**
- * Initialize meSpeak on app start (call early so voice is ready)
- */
 export function preloadMeSpeak() {
-  initMeSpeak();
+  // Fire and forget — never blocks anything
+  initMeSpeak().catch(() => {});
 }
 
 export { LETTER_PHONEMES };
